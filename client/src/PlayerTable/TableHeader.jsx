@@ -19,6 +19,7 @@ const TableHeader = () => (
           Native of
         </th>
         <th role="columnheader" className="table__header table__native"></th>
+        <th role="columnheader" className="table__header table__native"></th>
       </tr>
     </thead>
   </table>

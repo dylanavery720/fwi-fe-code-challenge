@@ -6,8 +6,10 @@ import { fetchPlayersSuccess } from '../appState/actions';
 import './PlayerTable.scss';
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
+import CreatePlayerModal from './CreatePlayerModal';
 
 const getPlayers = (state) => state.playerIds.map((id) => state.players[id]);
+const openModal = (state) => state.players.createPlayerModalOpen;
 
 const PlayerTable = () => {
   const dispatch = useDispatch();
@@ -38,6 +40,22 @@ const PlayerTable = () => {
     }
   }
 
+  async function createPlayer(body) {
+    const response = await fetch(`http://localhost:3001/players`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    if (response.ok) {
+      fetchAgain();
+    } else {
+      alert(`error: ${response.statusText}`);
+    }
+  }
+
   async function fetchAgain() {
     const response = await fetch('http://localhost:3001/players', {
       headers: {
@@ -50,7 +68,7 @@ const PlayerTable = () => {
   }
 
   const players = useSelector(getPlayers);
-
+  const createPlayerModalOpen = useSelector(openModal);
   return (
     <div
       id="player-table-grid"
@@ -60,6 +78,10 @@ const PlayerTable = () => {
     >
       <TableHeader />
       <TableBody players={players} deletePlayer={deletePlayer} />
+      <CreatePlayerModal
+        createPlayer={createPlayer}
+        isModalVisible={createPlayerModalOpen}
+      />
     </div>
   );
 };

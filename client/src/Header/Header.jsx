@@ -11,6 +11,7 @@ const Header = () => (
       <CloudEffects className="logo__effects" />
     </div>
     <h1 className="header__title">FWI Poker Challenge</h1>
+    <span className="header__title nav">CREATE PLAYER</span>
   </header>
 );
 

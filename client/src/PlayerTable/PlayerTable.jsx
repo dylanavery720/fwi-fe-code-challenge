@@ -24,6 +24,31 @@ const PlayerTable = () => {
     })();
   }, [dispatch]);
 
+  async function deletePlayer(playerId) {
+    const response = await fetch(`http://localhost:3001/players/${playerId}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+    if (response.ok) {
+      fetchAgain();
+    } else {
+      alert('user not found');
+    }
+  }
+
+  async function fetchAgain() {
+    const response = await fetch('http://localhost:3001/players', {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    const json = await response.json();
+    dispatch(fetchPlayersSuccess(json));
+  }
+
   const players = useSelector(getPlayers);
 
   return (
@@ -34,7 +59,7 @@ const PlayerTable = () => {
       className="player-table"
     >
       <TableHeader />
-      <TableBody players={players} />
+      <TableBody players={players} deletePlayer={deletePlayer} />
     </div>
   );
 };

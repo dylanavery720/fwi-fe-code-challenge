@@ -5,7 +5,7 @@ import Flags from 'react-world-flags';
 import Avatar from '../Avatar';
 import { COUNTRIES } from '../constants';
 
-const TableBody = ({ players }) => {
+const TableBody = ({ players, deletePlayer }) => {
   return (
     <table
       id="player-table-body"
@@ -34,6 +34,14 @@ const TableBody = ({ players }) => {
                 </Avatar>
                 {country}
               </div>
+            </td>
+            <td role="gridcell" className="table__native">
+              <span className="edit">EDIT</span>
+            </td>
+            <td role="gridcell" className="table__native">
+              <span onClick={() => deletePlayer(id)} className="delete">
+                DELETE
+              </span>
             </td>
           </tr>
         ))}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchPlayersSuccess } from '../appState/actions';
@@ -10,9 +10,12 @@ import CreatePlayerModal from './CreatePlayerModal';
 
 const getPlayers = (state) => state.playerIds.map((id) => state.players[id]);
 const openModal = (state) => state.players.createPlayerModalOpen;
+const getStart = (state) => state.players.start;
+const getSize = (state) => state.players.size;
 
 const PlayerTable = () => {
   const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
   useEffect(() => {
     (async function fetchPlayers() {
       const response = await fetch('http://localhost:3001/players', {
@@ -34,7 +37,7 @@ const PlayerTable = () => {
       },
     });
     if (response.ok) {
-      fetchAgain();
+      fetchPagination();
     } else {
       alert('user not found');
     }
@@ -50,18 +53,21 @@ const PlayerTable = () => {
       body: JSON.stringify(body),
     });
     if (response.ok) {
-      fetchAgain();
+      await fetchPagination();
     } else {
       alert(`error: ${response.statusText}`);
     }
   }
 
-  async function fetchAgain() {
-    const response = await fetch('http://localhost:3001/players', {
-      headers: {
-        Accept: 'application/json',
-      },
-    });
+  async function fetchPagination(size = 24, newStart) {
+    const response = await fetch(
+      `http://localhost:3001/players?size=${size}&from=${newStart}`,
+      {
+        headers: {
+          Accept: 'application/json',
+        },
+      }
+    );
 
     const json = await response.json();
     dispatch(fetchPlayersSuccess(json));
@@ -69,6 +75,19 @@ const PlayerTable = () => {
 
   const players = useSelector(getPlayers);
   const createPlayerModalOpen = useSelector(openModal);
+  const start = useSelector(getStart);
+  const size = useSelector(getSize);
+
+  async function nextPage() {
+    setPage(page + 1);
+    await fetchPagination(24, start + 24);
+  }
+
+  async function backPage() {
+    setPage(page - 1);
+    await fetchPagination(24, start - 24);
+  }
+
   return (
     <div
       id="player-table-grid"
@@ -76,7 +95,7 @@ const PlayerTable = () => {
       aria-label="Poker Players"
       className="player-table"
     >
-      <TableHeader />
+      <TableHeader nextPage={nextPage} backPage={backPage} page={page} />
       <TableBody players={players} deletePlayer={deletePlayer} />
       <CreatePlayerModal
         createPlayer={createPlayer}

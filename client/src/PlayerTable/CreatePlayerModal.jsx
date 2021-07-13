@@ -26,18 +26,18 @@ const CreatePlayerModal = ({
 
   const handleOk = () => {
     dispatch(openCreatePlayerModal(false));
-    editMode(null);
+    editMode(false);
   };
 
   const handleCancel = () => {
     dispatch(openCreatePlayerModal(false));
-    editMode(null);
+    editMode(false);
   };
 
   const onFinish = async (values) => {
     await createPlayer(values);
     dispatch(openCreatePlayerModal(false));
-    editMode(null);
+    editMode(false);
   };
 
   return (
@@ -49,7 +49,7 @@ const CreatePlayerModal = ({
         onCancel={handleCancel}
       >
         <Form
-          name="cerate"
+          name="create"
           form={form}
           labelCol={{
             span: 8,
@@ -84,7 +84,11 @@ const CreatePlayerModal = ({
           >
             <Select>
               {Object.keys(COUNTRIES).map((c) => {
-                return <Select.Option value={c}>{COUNTRIES[c]}</Select.Option>;
+                return (
+                  <Select.Option key={c} value={c}>
+                    {COUNTRIES[c]}
+                  </Select.Option>
+                );
               })}
             </Select>
           </Form.Item>

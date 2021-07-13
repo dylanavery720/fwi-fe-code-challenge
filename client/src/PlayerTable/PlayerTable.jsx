@@ -14,7 +14,6 @@ import CreatePlayerModal from './CreatePlayerModal';
 const getPlayers = (state) => state.playerIds.map((id) => state.players[id]);
 const modalOpen = (state) => state.players.createPlayerModalOpen;
 const getStart = (state) => state.players.start;
-const getSize = (state) => state.players.size;
 
 const PlayerTable = () => {
   const dispatch = useDispatch();
@@ -97,7 +96,6 @@ const PlayerTable = () => {
   const players = useSelector(getPlayers);
   const modalOpened = useSelector(modalOpen);
   const start = useSelector(getStart);
-  const size = useSelector(getSize);
 
   async function nextPage() {
     setPage(page + 1);
@@ -110,7 +108,7 @@ const PlayerTable = () => {
   }
 
   async function editMode(id, name, country, winnings) {
-    setEdit(true);
+    setEdit(id);
     setPlayer({ name: name, country: country, winnings: winnings, id: id });
     if (id) {
       dispatch(openCreatePlayerModal(true));

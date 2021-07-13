@@ -1,12 +1,10 @@
 import { FETCH_PLAYERS_SUCCESS, OPEN_CREATE_PLAYER_MODAL } from './constants';
 
 function mergePlayers(state, { players, size, from }) {
-  console.log(from, 'from', size, 'size');
   const newState = { ...state, start: from };
   players.forEach((player) => {
     newState[player.id] = player;
   });
-  console.log(newState, 'n');
   return newState;
 }
 

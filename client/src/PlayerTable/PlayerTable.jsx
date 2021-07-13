@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchPlayersSuccess } from '../appState/actions';
+import {
+  fetchPlayersSuccess,
+  openCreatePlayerModal,
+} from '../appState/actions';
 
 import './PlayerTable.scss';
 import TableHeader from './TableHeader';
@@ -9,13 +12,15 @@ import TableBody from './TableBody';
 import CreatePlayerModal from './CreatePlayerModal';
 
 const getPlayers = (state) => state.playerIds.map((id) => state.players[id]);
-const openModal = (state) => state.players.createPlayerModalOpen;
+const modalOpen = (state) => state.players.createPlayerModalOpen;
 const getStart = (state) => state.players.start;
 const getSize = (state) => state.players.size;
 
 const PlayerTable = () => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
+  const [edit, setEdit] = useState(null);
+  const [player, setPlayer] = useState({ name: '', winnings: '', country: '' });
   useEffect(() => {
     (async function fetchPlayers() {
       const response = await fetch('http://localhost:3001/players', {
@@ -37,7 +42,7 @@ const PlayerTable = () => {
       },
     });
     if (response.ok) {
-      fetchPagination();
+      fetchPagination(24, start);
     } else {
       alert('user not found');
     }
@@ -53,7 +58,23 @@ const PlayerTable = () => {
       body: JSON.stringify(body),
     });
     if (response.ok) {
-      await fetchPagination();
+      await fetchPagination(24, start);
+    } else {
+      alert(`error: ${response.statusText}`);
+    }
+  }
+
+  async function editPlayer(body) {
+    const response = await fetch(`http://localhost:3001/players/${edit}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+    if (response.ok) {
+      await fetchPagination(24, start);
     } else {
       alert(`error: ${response.statusText}`);
     }
@@ -74,7 +95,7 @@ const PlayerTable = () => {
   }
 
   const players = useSelector(getPlayers);
-  const createPlayerModalOpen = useSelector(openModal);
+  const modalOpened = useSelector(modalOpen);
   const start = useSelector(getStart);
   const size = useSelector(getSize);
 
@@ -88,6 +109,16 @@ const PlayerTable = () => {
     await fetchPagination(24, start - 24);
   }
 
+  async function editMode(id, name, country, winnings) {
+    setEdit(true);
+    setPlayer({ name: name, country: country, winnings: winnings, id: id });
+    if (id) {
+      dispatch(openCreatePlayerModal(true));
+    } else {
+      setPlayer({ name: '', winnings: '', country: '' });
+    }
+  }
+
   return (
     <div
       id="player-table-grid"
@@ -96,10 +127,16 @@ const PlayerTable = () => {
       className="player-table"
     >
       <TableHeader nextPage={nextPage} backPage={backPage} page={page} />
-      <TableBody players={players} deletePlayer={deletePlayer} />
+      <TableBody
+        players={players}
+        deletePlayer={deletePlayer}
+        editMode={editMode}
+      />
       <CreatePlayerModal
-        createPlayer={createPlayer}
-        isModalVisible={createPlayerModalOpen}
+        createPlayer={edit ? editPlayer : createPlayer}
+        editMode={editMode}
+        isModalVisible={modalOpened}
+        player={player}
       />
     </div>
   );

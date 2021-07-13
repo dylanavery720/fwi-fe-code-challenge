@@ -4,21 +4,40 @@ import { Modal, Button, Form, Input, InputNumber, Select } from 'antd';
 import { openCreatePlayerModal } from '../appState/actions';
 import { useDispatch } from 'react-redux';
 import { COUNTRIES } from '../constants';
+import { useEffect } from 'react';
 
-const CreatePlayerModal = ({ isModalVisible, createPlayer }) => {
+const CreatePlayerModal = ({
+  isModalVisible,
+  createPlayer,
+  editMode,
+  player,
+}) => {
+  const [form] = Form.useForm();
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    form.setFieldsValue({
+      name: player.name,
+      country: player.country,
+      winnings: player.winnings,
+    });
+  });
 
   const handleOk = () => {
     dispatch(openCreatePlayerModal(false));
+    editMode(null);
   };
 
   const handleCancel = () => {
     dispatch(openCreatePlayerModal(false));
+    editMode(null);
   };
 
   const onFinish = async (values) => {
     await createPlayer(values);
     dispatch(openCreatePlayerModal(false));
+    editMode(null);
   };
 
   return (
@@ -31,6 +50,7 @@ const CreatePlayerModal = ({ isModalVisible, createPlayer }) => {
       >
         <Form
           name="cerate"
+          form={form}
           labelCol={{
             span: 8,
           }}
@@ -38,6 +58,7 @@ const CreatePlayerModal = ({ isModalVisible, createPlayer }) => {
             span: 16,
           }}
           onFinish={onFinish}
+          afterClose={() => form.resetFields()}
         >
           <Form.Item
             label="Username"

@@ -78,7 +78,7 @@ const CreatePlayerModal = ({
             rules={[
               {
                 required: true,
-                message: 'Please input your password!',
+                message: 'Please input your Country!',
               },
             ]}
           >
@@ -98,7 +98,7 @@ const CreatePlayerModal = ({
             rules={[
               {
                 required: true,
-                message: 'Please input your password!',
+                message: 'Please input your Winnings!',
               },
             ]}
           >
